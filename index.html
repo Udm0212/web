@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Videoteca Personal - Flexible</title>
+    <title>Mi Videoteca Personal - Gestos Táctiles</title>
     <style>
         /* Estilos Base y Minimalistas */
         body {
@@ -167,7 +167,7 @@
             }
 
             #video-list {
-                 margin-top: 100px; 
+                 margin-top: 110px; 
                  padding: 15px;
                  grid-template-columns: 1fr;
             }
@@ -249,9 +249,6 @@
     <script>
         // ----------------------------------------------------
         // 1. ESTRUCTURA DE DATOS: ¡MODIFICA SOLO ESTO PARA AÑADIR VIDEOS!
-        // Copia la URL de incrustación (Embed URL) COMPLETA que te da la plataforma (YouTube, Vimeo, etc.).
-        // EJEMPLO DE YOUTUBE: La URL que va dentro de src="" en el iframe.
-        // EJEMPLO DE VIMEO: La URL que va dentro de src="" en el iframe de vimeo.
         // ----------------------------------------------------
         const videoData = [
             { embedURL: "https://www.youtube.com/embed/jNMPu9M7i50", title: "Revisión del Nuevo MacBook Pro M3", category: "Tecnologia" },
@@ -276,7 +273,6 @@
             let htmlContent = '';
             const categories = new Set(["Todos"]); 
 
-            // Generar HTML de las tarjetas de video
             videoData.forEach(video => {
                 categories.add(video.category); 
 
@@ -295,7 +291,6 @@
 
             videoList.innerHTML = htmlContent;
 
-            // Generar HTML del menú de categorías
             let menuHtml = '<ul>';
             categories.forEach(category => {
                 menuHtml += `
@@ -305,12 +300,11 @@
             menuHtml += '</ul>';
             navMenu.innerHTML = menuHtml;
 
-            // Mostrar 'Todos' por defecto al cargar la página
             filterByCategory('Todos');
         }
 
         // ----------------------------------------------------
-        // 3. FUNCIONES DE FILTRADO Y MENÚ (Sin cambios)
+        // 3. FUNCIONES DE FILTRADO Y MENÚ (Ligeramente modificadas)
         // ----------------------------------------------------
 
         function toggleMenu() {
@@ -359,6 +353,58 @@
                 toggleMenu();
             }
         }
+        
+        // ----------------------------------------------------
+        // 4. LÓGICA DE GESTOS TÁCTILES (SWIPE)
+        // ----------------------------------------------------
+        let touchstartX = 0;
+        let touchendX = 0;
+        const SWIPE_THRESHOLD = 50; // Mínimo de píxeles para contar como swipe
+
+        // Función de detección de swipe
+        function handleSwipe(isMenuArea) {
+            const deltaX = touchendX - touchstartX;
+
+            if (window.innerWidth > 768) return; // Solo móvil
+
+            if (deltaX > SWIPE_THRESHOLD) {
+                // Swipe de izquierda a derecha (Mostrar menú)
+                if (!navMenu.classList.contains('mobile-visible')) {
+                    // Solo abrir si el toque empieza cerca del borde (ej. 30px)
+                    if (touchstartX < 30) { 
+                        toggleMenu();
+                    }
+                }
+            } else if (deltaX < -SWIPE_THRESHOLD) {
+                // Swipe de derecha a izquierda (Ocultar menú)
+                if (navMenu.classList.contains('mobile-visible') && isMenuArea) {
+                    toggleMenu();
+                }
+            }
+        }
+
+        // Eventos para el cuerpo (para deslizar hacia afuera)
+        document.body.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.body.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            // Pasamos 'false' ya que el swipe es para abrir desde el borde del body
+            handleSwipe(false); 
+        }, false);
+        
+        // Eventos para el menú (para deslizar hacia adentro/cerrar)
+        navMenu.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, false);
+
+        navMenu.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            // Pasamos 'true' ya que el swipe se originó en el menú y es para cerrarlo
+            handleSwipe(true); 
+        }, false);
+
 
         // Ejecutar la generación de HTML al cargar la página
         document.addEventListener('DOMContentLoaded', generateHTML);
