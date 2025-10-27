@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Videoteca Personal - Flexible</title>
+    <style>
+        /* Estilos Base y Minimalistas */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        /* -------------------------------------- */
+        /* CABECERA FIJA Y CONTENEDOR PRINCIPAL */
+        /* -------------------------------------- */
+        #fixed-header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 900;
+            background-color: #f4f7f6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 300;
+        }
+
+        /* Buscador */
+        .search-container {
+            background-color: #ffffff;
+            padding: 0 30px 20px 30px; 
+            border-bottom: 1px solid #eee;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        /* -------------------------------------- */
+        /* MARGEN Y GRID DE VIDEOS */
+        /* -------------------------------------- */
+        #video-list {
+            margin-top: 150px; 
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        /* -------------------------------------- */
+        /* ESTILOS DE TARJETA DE VIDEO */
+        /* -------------------------------------- */
+        .video-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
+            transition: transform 0.3s, box-shadow 0.3s; 
+            border: 1px solid #eee;
+            z-index: 1; 
+        }
+
+        .video-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); 
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; 
+        }
+
+        .video-embed iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-info h2 {
+            margin-top: 0;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .video-info p {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 0;
+        }
+
+        /* -------------------------------------- */
+        /* ESTILOS DE ESCRITORIO (MÁS DE 768px) */
+        /* -------------------------------------- */
+
+        #main-nav {
+            position: static; 
+            width: auto;
+            height: auto;
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        #main-nav ul {
+            list-style: none; 
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        #main-nav a {
+            text-decoration: none;
+            color: #5a67d8; 
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        #menu-toggle {
+            display: none; 
+        }
+        
+        /* -------------------------------------- */
+        /* ESTILOS DE MÓVIL (MEDIA QUERY) */
+        /* -------------------------------------- */
+        
+        @media (max-width: 768px) {
+            
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .search-container {
+                padding: 0 15px 15px 15px; 
+            }
+
+            #video-list {
+                 margin-top: 100px; 
+                 padding: 15px;
+                 grid-template-columns: 1fr;
+            }
+            
+            #menu-toggle {
+                display: block; 
+                position: fixed;
+                bottom: 20px; 
+                left: 20px;  
+                z-index: 1000;
+                background-color: #5a67d8;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                line-height: 50px;
+                text-align: center;
+                cursor: pointer;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            #main-nav {
+                position: fixed;
+                top: 0;
+                left: -80%; 
+                width: 80%; 
+                height: 100%;
+                background-color: rgba(244, 247, 246, 0.98); 
+                z-index: 999;
+                padding-top: 50px;
+                box-sizing: border-box;
+                overflow-y: auto;
+                transition: left 0.4s ease-in-out; 
+            }
+
+            #main-nav.mobile-visible {
+                left: 0; 
+            }
+            
+            #main-nav ul {
+                list-style: none; 
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                text-align: left; 
+            }
+
+            #main-nav a {
+                display: block;
+                color: #333;
+                font-size: 1.2em;
+                padding: 15px 20px;
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fixed-header-container">
+        <header>
+            <nav id="main-nav">
+                </nav>
+        </header>
+
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Buscar video por título..." onkeyup="filterVideos()">
+        </div>
+    </div>
+    <main class="video-grid" id="video-list">
+        </main>
+    
+    <button id="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <script>
+        // ----------------------------------------------------
+        // 1. ESTRUCTURA DE DATOS: ¡MODIFICA SOLO ESTO PARA AÑADIR VIDEOS!
+        // Copia la URL de incrustación (Embed URL) COMPLETA que te da la plataforma (YouTube, Vimeo, etc.).
+        // EJEMPLO DE YOUTUBE: La URL que va dentro de src="" en el iframe.
+        // EJEMPLO DE VIMEO: La URL que va dentro de src="" en el iframe de vimeo.
+        // ----------------------------------------------------
+        const videoData = [
+            { embedURL: "https://www.youtube.com/embed/jNMPu9M7i50", title: "Revisión del Nuevo MacBook Pro M3", category: "Tecnologia" },
+            { embedURL: "https://player.vimeo.com/video/285517865", title: "Documental sobre Diseño Minimalista", category: "Tecnologia" }, 
+            { embedURL: "https://www.youtube.com/embed/9b7eT4iX43M", title: "Cómo hacer un Pan de Masa Madre perfecto", category: "Cocina" },
+            { embedURL: "https://www.youtube.com/embed/cbJj-R-192E", title: "Rutina de 20 minutos de Cardio en Casa", category: "Fitness" },
+            { embedURL: "https://www.youtube.com/embed/z4A-32K6z3A", title: "Guía de Viaje a Tokio: Lugares imperdibles", category: "Viajes" },
+            { embedURL: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "Clásico 80s: Nunca Te Rindas - Rick Astley", category: "Musica" },
+            { embedURL: "https://www.youtube.com/embed/Y7s-Xh_p-6I", title: "Documental sobre el Espacio y Galaxias", category: "Ciencia" },
+            { embedURL: "https://www.youtube.com/embed/o7n06h5E0o8", title: "Receta de Tarta de Manzana Vegana", category: "Cocina" },
+        ];
+        
+        // ----------------------------------------------------
+        // 2. FUNCIÓN PARA GENERAR EL HTML DE LAS TARJETAS Y EL MENÚ
+        // ----------------------------------------------------
+        
+        const videoList = document.getElementById('video-list');
+        const navMenu = document.getElementById('main-nav');
+        const menuToggle = document.getElementById('menu-toggle');
+        
+        function generateHTML() {
+            let htmlContent = '';
+            const categories = new Set(["Todos"]); 
+
+            // Generar HTML de las tarjetas de video
+            videoData.forEach(video => {
+                categories.add(video.category); 
+
+                htmlContent += `
+                    <div class="video-card" data-category="${video.category}">
+                        <div class="video-embed">
+                            <iframe src="${video.embedURL}" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h2>${video.title}</h2>
+                            <p>Categoría: ${video.category}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            videoList.innerHTML = htmlContent;
+
+            // Generar HTML del menú de categorías
+            let menuHtml = '<ul>';
+            categories.forEach(category => {
+                menuHtml += `
+                    <li><a href="#" data-category="${category}" onclick="filterByCategory('${category}')">${category}</a></li>
+                `;
+            });
+            menuHtml += '</ul>';
+            navMenu.innerHTML = menuHtml;
+
+            // Mostrar 'Todos' por defecto al cargar la página
+            filterByCategory('Todos');
+        }
+
+        // ----------------------------------------------------
+        // 3. FUNCIONES DE FILTRADO Y MENÚ (Sin cambios)
+        // ----------------------------------------------------
+
+        function toggleMenu() {
+            if (navMenu.classList.contains('mobile-visible')) {
+                navMenu.classList.remove('mobile-visible');
+                menuToggle.textContent = '☰'; 
+            } else {
+                navMenu.classList.add('mobile-visible');
+                menuToggle.textContent = '✕'; 
+            }
+        }
+        
+        function filterVideos() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.toUpperCase();
+            const cards = document.getElementsByClassName('video-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                const titleElement = cards[i].querySelector('.video-info h2');
+                const title = titleElement ? titleElement.textContent || titleElement.innerText : '';
+
+                if (title.toUpperCase().indexOf(filter) > -1) {
+                    cards[i].style.display = ""; 
+                } else {
+                    cards[i].style.display = "none"; 
+                }
+            }
+        }
+
+        function filterByCategory(category) {
+            const cards = document.getElementsByClassName('video-card');
+            
+            document.getElementById('search-input').value = ''; 
+
+            for (let i = 0; i < cards.length; i++) {
+                const cardCategory = cards[i].getAttribute('data-category');
+                
+                if (category === 'Todos' || cardCategory === category) {
+                    cards[i].style.display = ""; 
+                } else {
+                    cards[i].style.display = "none"; 
+                }
+            }
+            
+            if (navMenu.classList.contains('mobile-visible') && window.innerWidth <= 768) {
+                toggleMenu();
+            }
+        }
+
+        // Ejecutar la generación de HTML al cargar la página
+        document.addEventListener('DOMContentLoaded', generateHTML);
+    </script>
+
+</body>
+</html>
